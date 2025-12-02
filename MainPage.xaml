@@ -6,10 +6,6 @@
              xmlns:vm="clr-namespace:MyMaui.ViewModel"
              x:DataType="vm:MainViewModel">
 
-    <ContentPage.BindingContext>
-        <vm:MainViewModel />
-    </ContentPage.BindingContext>
-
     <Grid RowDefinitions="100, Auto, *"
           ColumnDefinitions=".75*, .25*"
           Padding="10"

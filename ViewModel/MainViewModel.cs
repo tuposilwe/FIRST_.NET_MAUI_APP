@@ -6,6 +6,13 @@ namespace MyMaui.ViewModel
 {
     public partial class MainViewModel : ObservableObject
     {
+        IConnectivity connectivity;
+
+        public MainViewModel(IConnectivity connectivity)
+        {
+            this.connectivity = connectivity;
+        }
+
         public ObservableCollection<string> Items { get; } = new ObservableCollection<string>();
 
         [ObservableProperty]
@@ -20,10 +27,15 @@ namespace MyMaui.ViewModel
         private bool CanAdd() => !string.IsNullOrWhiteSpace(Text);
 
         [RelayCommand(CanExecute = nameof(CanAdd))]
-        private void Add()
+        private async Task Add()
         {
             //if (string.IsNullOrWhiteSpace(Text))
             //    return;
+
+            if (connectivity.NetworkAccess != NetworkAccess.Internet) {
+                await Shell.Current.DisplayAlertAsync("Uh oh!","No Internet","OK");
+                return;
+            }
 
             Items.Add(Text!.Trim());
 
