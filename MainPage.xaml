@@ -1,7 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MyMaui.MainPage">
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="MyMaui.MainPage"
+             xmlns:vm="clr-namespace:MyMaui.ViewModel"
+             x:DataType="vm:MainViewModel">
+
+    <ContentPage.BindingContext>
+        <vm:MainViewModel />
+    </ContentPage.BindingContext>
 
     <Grid RowDefinitions="100, Auto, *"
           ColumnDefinitions=".75*, .25*"
@@ -13,29 +20,36 @@
                 Source="logo.png"
                BackgroundColor="Transparent"/>
 
-        <Entry Placeholder="Enter task"
-               Text="{Binding Text}"
-               Grid.Row="1"/>
+        <Entry
+            x:Name="ItemEntry"
+            Text="{Binding Text}" 
+            Placeholder="Enter Task"
+            Grid.Row="1"
+            Completed="Entry_Completed"
+            ReturnType="Done"
+            />
 
         <Button Text="Add"
-                Command="{Binding AddCommand}"
                 Grid.Row="1"
-                Grid.Column="1"/>
+                Grid.Column="1"
+                Command="{Binding AddCommand}" />
 
-        <CollectionView Grid.Row="2" Grid.ColumnSpan="2">
-            <CollectionView.ItemsSource>
-                <x:Array Type="{x:Type x:String}">
-                    <x:String>Apple</x:String>
-                    <x:String>Banana</x:String>
-                    <x:String>Orange</x:String>
-                </x:Array>
-            </CollectionView.ItemsSource>
+        <CollectionView Grid.Row="2" Grid.ColumnSpan="2"
+                        ItemsSource="{Binding Items}">
             <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Padding="0,5">
-                        <Border>
-                            <Label Text="{Binding .}" FontSize="24"  Margin="20"/>
+                <DataTemplate x:DataType="{x:Type x:String}">
+                    <Grid Padding="0,5" ColumnDefinitions="*, Auto">
+                        <Border Grid.Column="0">
+                            
+                        <Label Text="{Binding .}" FontSize="24" Margin="20"/>
                         </Border>
+                        
+                        <Button Grid.Column="1" Text="Delete"
+                            IsVisible="{OnPlatform WinUI=true, Android=false, iOS=false}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainViewModel}},Path=DeleteCommand}"
+                            CommandParameter="{Binding .}" 
+                            Margin="5" />
+
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
