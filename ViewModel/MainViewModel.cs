@@ -44,6 +44,14 @@ namespace MyMaui.ViewModel
         }
 
 
+
+        [RelayCommand]
+        private async Task Tap(string s)
+        {
+            await Shell.Current.GoToAsync($"{nameof(DetailPage)}?id={s}");
+        }
+
+
         // Event to notify the view to show a toast
         public event Action<string>? ShowToast;
     }

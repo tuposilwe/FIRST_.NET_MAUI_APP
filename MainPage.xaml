@@ -35,18 +35,29 @@
                 Command="{Binding AddCommand}" />
 
         <CollectionView Grid.Row="2" Grid.ColumnSpan="2"
-                        ItemsSource="{Binding Items}">
+                        ItemsSource="{Binding Items}"
+                        SelectionMode="None"
+                        >
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="{x:Type x:String}">
                     <Grid Padding="0,5" ColumnDefinitions="*, Auto">
                         <Border Grid.Column="0">
-                            
-                        <Label Text="{Binding .}" FontSize="24" Margin="20"/>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                     Command="{Binding 
+                                    Source={RelativeSource AncestorType={x:Type vm:MainViewModel}},
+                                    Path=TapCommand}"
+                                    CommandParameter="{Binding .}" 
+                                    />
+                            </Border.GestureRecognizers>
+                            <Label Text="{Binding .}" FontSize="24" Margin="20"/>
                         </Border>
                         
                         <Button Grid.Column="1" Text="Delete"
                             IsVisible="{OnPlatform WinUI=true, Android=false, iOS=false}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainViewModel}},Path=DeleteCommand}"
+                            Command="{Binding 
+                            Source={RelativeSource AncestorType={x:Type vm:MainViewModel}},
+                            Path=DeleteCommand}"
                             CommandParameter="{Binding .}" 
                             Margin="5" />
 
