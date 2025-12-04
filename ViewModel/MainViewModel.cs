@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using MyMaui.Data;
 using MyMaui.Models;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core; // for SnackbarOptions, SnackbarDuration
+
 
 namespace MyMaui.ViewModel
 {
@@ -98,21 +101,33 @@ namespace MyMaui.ViewModel
         {
             try
             {
-                bool confirm = await App.Current.MainPage.DisplayAlertAsync(
-                    "Confirm Delete",
-                    $"Are you sure you want to delete \"{item.Name}\"?",
-                    "Yes",
-                    "No");
-
-                if (!confirm)
-                    return;
+                // Remove item from UI first (optimistic)
+                Items.Remove(item);
 
                 using var context = dbFactory.CreateDbContext();
                 context.Item.Remove(item);
                 await context.SaveChangesAsync();
 
-                Items.Remove(item);
-                ShowToast?.Invoke($"{item.Name} Deleted");
+                // Show Snackbar with Undo
+                var snackbar = Snackbar.Make(
+                    message: $"\"{item.Name}\" deleted",
+                    action: async () =>
+                    {
+                        // Undo action: restore item
+                        using var undoContext = dbFactory.CreateDbContext();
+                        undoContext.Item.Add(item);
+                        await undoContext.SaveChangesAsync();
+
+                        //Items.Add(item);
+                        int index = Items.Count; // or store previous index before removing
+                        Items.Insert(index, item);
+                        // restore in UI
+                        ShowToast?.Invoke($"\"{item.Name}\" restored");
+                    },
+                    duration: TimeSpan.FromSeconds(5)
+                );
+
+                await snackbar.Show();
             }
             catch (Exception ex)
             {

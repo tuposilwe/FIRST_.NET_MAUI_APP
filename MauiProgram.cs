@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using CommunityToolkit.Maui;
 using MyMaui.Data;
 using MyMaui.Models;
 using MyMaui.ViewModel;
@@ -13,13 +14,32 @@ namespace MyMaui
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit(options =>
+                  {
+                      options.SetShouldEnableSnackbarOnWindows(true);
+                  })
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "items.db");
+            // Get the My Documents folder path
+            var myDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            // Define a subfolder for your database
+            var dbFolder = Path.Combine(myDocumentsPath, "MyDatabase");
+
+            // Make sure the folder exists
+            if (!Directory.Exists(dbFolder))
+            {
+                Directory.CreateDirectory(dbFolder);
+            }
+
+            // Combine with the database file name
+            var dbPath = Path.Combine(dbFolder, "items.db");
+
+            //var dbPath = Path.Combine(FileSystem.AppDataDirectory, "items.db");
 
             // Use DbContextFactory so singletons/transients can create contexts safely.
             builder.Services.AddDbContextFactory<DataContext>(options =>
