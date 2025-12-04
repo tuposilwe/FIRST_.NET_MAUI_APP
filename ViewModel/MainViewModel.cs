@@ -5,7 +5,6 @@ using MyMaui.Data;
 using MyMaui.Models;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core; // for SnackbarOptions, SnackbarDuration
 
 
 namespace MyMaui.ViewModel
@@ -144,7 +143,7 @@ namespace MyMaui.ViewModel
         {
             try
             {
-                string newName = await App.Current.MainPage.DisplayPromptAsync(
+                string newName = await Shell.Current.DisplayPromptAsync(
                     "Edit Task",
                     "Enter new name:",
                     initialValue: item.Name
@@ -170,6 +169,12 @@ namespace MyMaui.ViewModel
             {
                 ShowToast?.Invoke("Edit ERROR: " + ex.Message);
             }
+        }
+
+        [RelayCommand]
+        async Task Tap(Item item)
+        {
+            await Shell.Current.GoToAsync($"{nameof(DetailPage)}?id={item.Name}");
         }
 
         // -----------------------------
