@@ -1,5 +1,4 @@
-﻿
-using MyMaui.ViewModel;
+﻿using MyMaui.ViewModel;
 
 namespace MyMaui
 {
@@ -9,26 +8,37 @@ namespace MyMaui
         {
             InitializeComponent();
             BindingContext = vm;
+
             vm.ShowToast += async (msg) =>
             {
-                await DisplayAlertAsync("Info", msg, "OK");
+                // use MainThread to ensure UI call on UI thread
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await DisplayAlertAsync("Info", msg, "OK");
+                });
             };
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            if (BindingContext is MainViewModel vm)
+            {
+                if (vm.LoadItemsCommand.CanExecute(null))
+                    vm.LoadItemsCommand.Execute(null);
+            }
         }
 
         private void Entry_Completed(object? sender, EventArgs e)
         {
-            if (BindingContext is MyMaui.ViewModel.MainViewModel vm)
+            if (BindingContext is MainViewModel vm)
             {
-                // If using CommunityToolkit generated command:
                 if (vm.AddCommand.CanExecute(null))
                     vm.AddCommand.Execute(null);
 
-                // Or call the method directly if public:
-                // vm.Add();
-
-                ItemEntry.Focus();
+                ItemEntry?.Focus();
             }
-    }
-
+        }
     }
 }

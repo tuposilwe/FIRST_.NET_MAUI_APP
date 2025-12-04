@@ -1,65 +1,85 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:Class="MyMaui.MainPage"
-             xmlns:vm="clr-namespace:MyMaui.ViewModel"
-             x:DataType="vm:MainViewModel">
+<ContentPage
+    x:Class="MyMaui.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:MyMaui.Models"
+    xmlns:vm="clr-namespace:MyMaui.ViewModel"
+    x:DataType="vm:MainViewModel">
 
-    <Grid RowDefinitions="100, Auto, *"
-          ColumnDefinitions=".75*, .25*"
-          Padding="10"
-          RowSpacing="10"
-          ColumnSpacing="10">
+    <Grid
+        Padding="10"
+        ColumnDefinitions=".75*, .25*"
+        ColumnSpacing="10"
+        RowDefinitions="100, Auto, *"
+        RowSpacing="10">
 
-        <Image Grid.ColumnSpan="2"
-                Source="logo.png"
-               BackgroundColor="Transparent"/>
+        <Image
+            Grid.ColumnSpan="2"
+            BackgroundColor="Transparent"
+            Source="logo.png" />
 
         <Entry
             x:Name="ItemEntry"
-            Text="{Binding Text}" 
-            Placeholder="Enter Task"
             Grid.Row="1"
             Completed="Entry_Completed"
+            Placeholder="Enter Task"
             ReturnType="Done"
-            />
+            Text="{Binding Text}" />
 
-        <Button Text="Add"
-                Grid.Row="1"
-                Grid.Column="1"
-                Command="{Binding AddCommand}" />
+        <Button
+            Grid.Row="1"
+            Grid.Column="1"
+            Command="{Binding AddCommand}"
+            Text="Add" />
 
-        <CollectionView Grid.Row="2" Grid.ColumnSpan="2"
-                        ItemsSource="{Binding Items}"
-                        SelectionMode="None"
-                        >
+        <CollectionView
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            ItemsSource="{Binding Items}"
+            SelectionMode="None">
+
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="{x:Type x:String}">
-                    <Grid Padding="0,5" ColumnDefinitions="*, Auto">
+                <DataTemplate x:DataType="models:Item">
+                    <Grid Padding="0,5" ColumnDefinitions="*, Auto, Auto">
+
                         <Border Grid.Column="0">
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer
-                                     Command="{Binding 
-                                    Source={RelativeSource AncestorType={x:Type vm:MainViewModel}},
-                                    Path=TapCommand}"
-                                    CommandParameter="{Binding .}" 
-                                    />
+                                <TapGestureRecognizer 
+                                    Command="{Binding
+                                    Source={RelativeSource 
+                                    AncestorType={x:Type vm:MainViewModel}},
+                                    Path=EditCommand}" 
+                                    CommandParameter="{Binding .}" />
                             </Border.GestureRecognizers>
-                            <Label Text="{Binding .}" FontSize="24" Margin="20"/>
-                        </Border>
-                        
-                        <Button Grid.Column="1" Text="Delete"
-                            IsVisible="{OnPlatform WinUI=true, Android=false, iOS=false}"
-                            Command="{Binding 
-                            Source={RelativeSource AncestorType={x:Type vm:MainViewModel}},
-                            Path=DeleteCommand}"
-                            CommandParameter="{Binding .}" 
-                            Margin="5" />
 
+                            <Label
+                                Margin="20"
+                                FontSize="24"
+                                Text="{Binding Name}" />
+                        </Border>
+
+                        <!--  Edit Button  -->
+                        <Button
+                            Grid.Column="1"
+                            Margin="5"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainViewModel}}, Path=EditCommand}"
+                            CommandParameter="{Binding .}"
+                            Text="Edit" />
+
+                        <!--  Delete Button  -->
+                        <Button
+                            Grid.Column="2"
+                            Margin="5"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainViewModel}}, Path=DeleteCommand}"
+                            CommandParameter="{Binding .}"
+                            Text="Delete" />
                     </Grid>
+
                 </DataTemplate>
             </CollectionView.ItemTemplate>
+
         </CollectionView>
+
     </Grid>
 </ContentPage>
